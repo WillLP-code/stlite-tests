@@ -11,12 +11,19 @@ df = pd.read_csv(data)
 category = df['category'].unique()        
 
 with st.sidebar:
+     chart_title = st.sidebar.text_input(label='What do you want to call the chart?',
+                                         value='Please name the chart')
+
+
+with st.sidebar:
         years = st.sidebar.slider('Year select',
                         min_value=2013,
                         max_value=2022,
                         value=[2013,2022])
 
 df = df[(df['time_period'].astype(int) >= years[0]) & (df['time_period'].astype(int) <= years[1])]
+
+
 
 with st.sidebar:
     cat_option = st.sidebar.selectbox(
@@ -36,6 +43,6 @@ st.dataframe(df)
 
 
 
-fig = px.line(df, x="time_period", y="number", title=f'{cat_option} : {cat_type_option}')
+fig = px.line(df, x="time_period", y="number", title=f'{chart_title}')
 st.plotly_chart(fig)
 

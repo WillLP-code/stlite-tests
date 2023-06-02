@@ -34,6 +34,10 @@ st.write('Data available publicly here: https://explore-education-statistics.ser
 data = open_url("https://raw.githubusercontent.com/WillLP-code/stlite-tests/main/benchmarking%20test/data/a1.csv")
 df = pd.read_csv(data)
 
+with st.sidebar:
+     chart_title = st.sidebar.text_input(label='What do you want to call the chart?',
+                                         value='Please name the chart')
+
 category = df['category'].unique()
 
 with st.sidebar:
