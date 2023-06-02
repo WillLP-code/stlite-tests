@@ -65,7 +65,7 @@ with st.sidebar:
 df = df[df['category_type'] == cat_type_option]
 st.dataframe(df)
 
-fig = px.line(df, x="time_period", y="number", title=f'{cat_option} : {cat_type_option}')
+fig = px.line(df, x="time_period", y="number", title=f'{chart_title}<br><sup>{cat_option} : {cat_type_option}</sup>')
 st.plotly_chart(fig)
 `,
     },
