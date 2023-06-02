@@ -11,6 +11,7 @@ df = pd.read_csv(data)
 category = df['category'].unique()        
 
 with st.sidebar:
+     st.title('Chart Options')
      chart_title = st.sidebar.text_input(label='What do you want to call the chart?',
                                          value='Please name the chart')
 

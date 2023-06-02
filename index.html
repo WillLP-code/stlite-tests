@@ -35,7 +35,8 @@ data = open_url("https://raw.githubusercontent.com/WillLP-code/stlite-tests/main
 df = pd.read_csv(data)
 
 with st.sidebar:
-     chart_title = st.sidebar.text_input(label='What do you want to call the chart?',
+    st.title('Chart Options')
+    chart_title = st.sidebar.text_input(label='What do you want to call the chart?',
                                          value='Please name the chart')
 
 category = df['category'].unique()
