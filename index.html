@@ -35,6 +35,16 @@ data = open_url("https://raw.githubusercontent.com/WillLP-code/stlite-tests/main
 df = pd.read_csv(data)
 
 category = df['category'].unique()
+
+with st.sidebar:
+        years = st.sidebar.slider('Year select',
+                        min_value=2013,
+                        max_value=2022,
+                        value=[2013,2022])
+
+df = df[(df['time_period'].astype(int) >= years[0]) & (df['time_period'].astype(int) <= years[1])]
+
+
 with st.sidebar:
     cat_option = st.sidebar.selectbox(
     'What data category would you like?',
