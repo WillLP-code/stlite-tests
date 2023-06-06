@@ -4,6 +4,8 @@ import numpy as np
 import datetime
 import plotly.graph_objects as go
 
+
+st.title('test')
 '''
 The csvs must start with the first row as the header, then the data
 All child ID columns must be child unique id
@@ -56,7 +58,7 @@ labels = ['Assessment: No further action',
 labs = pd.DataFrame(list(zip(names, labels)),
                             columns=['name', 'lab'])
 
-st.title('test')
+
 journey_events = {'contact': {'contacts':'contact_dttm'},
         'early_help_assessment_start': {'early_help_assessments':'eha_startdate'},
         'early_help_assessment_end': {'early_help_assessments':'eha_completeddate'},
