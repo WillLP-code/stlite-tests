@@ -335,7 +335,7 @@ if uploaded_files:
     n = 1 
     # set to 100 for everthing else 
     df["event_ord"] = 100
-          
+        
     for t in event_order:
         df.loc[df["type"] == t, "event_ord"] = n
         n = n+1 
@@ -361,13 +361,12 @@ if uploaded_files:
     #################################
     
     #going to spread by referral ID 
-    referral_vars = ["ethnicity", "date of birth", "gender", "number of referrals in last 12 months", "referral source"]
+    referral_vars = ["ethnicity", "age", "gender", "number of referrals in last 12 months", "referral source"]
     core_vars = ["ref_id", "date"] + referral_vars
     ref_dta = df[df["type"] == "referral"]
     ref_dta = ref_dta[core_vars]
 
-    ref_dta =ref_dta.rename(columns = {"number of referrals in last 12 months":"num_ref", 
-                                    "date of birth" : "dob", 
+    ref_dta =ref_dta.rename(columns = {"number of referrals in last 12 months":"num_ref",  
                                     "referral source" : "ref_source", 
                                     "date" : "ref_date"})
 
@@ -376,13 +375,41 @@ if uploaded_files:
     df = df.merge(ref_dta, left_on = "ref_id", right_on = "ref_id", validate ="many_to_one")
 
 
-    # FILTERING VARIABLES 
-    # using regex (?i) to ignore case
-    #df = df[df["num_ref"] == "1"] 
-    df = df[df["gender"].str.contains('(?i)female')] 
-    #df = df[df["ethnicity"] == "a) WBRI"] 
-    #df = df[df["ref_source"] == "q) 6: Police"] 
+    #gender options
+    with st.sidebar:
+        gender_option = st.sidebar.multiselect(
+        'What gender options category would you like?',
+        options=(df['gender'].unique()), default=(df['gender'].unique()))
+    df = df[df["gender"].isin(gender_option)] 
+    
+    #source options
+    with st.sidebar:
+        source_option = st.sidebar.multiselect(
+        'What referral source options category would you like?',
+        options=(df['ref_source'].unique()), default=(df['ref_source'].unique()))
+    df = df[df["ref_source"].isin(source_option)] 
 
+    # Ethnicity options
+    with st.sidebar:
+        ethnicity_option = st.sidebar.multiselect(
+        'What ethnicity options category would you like?',
+        options=(df['ethnicity'].unique()), default=(df['ethnicity'].unique()))
+    df = df[df["ethnicity"].isin(ethnicity_option)] 
+
+    # number of referrals in the year
+    with st.sidebar:
+            num_of_refs = st.sidebar.slider('Number of referrals within 12 months',
+                            min_value=0,
+                            max_value=int(df['num_ref'].max()),
+                            value=[0,int(df['num_ref'].max())])
+    df = df[(df['num_ref'].astype(int) >= num_of_refs[0]) & (df['num_ref'].astype(int) <= num_of_refs[1])]
+
+    with st.sidebar:
+            ages = st.sidebar.slider('Age range of children',
+                            min_value=0,
+                            max_value=int(df['age'].max()),
+                            value=[0,int(df['age'].max())])
+    df = df[(df['age'].astype(int) >= ages[0]) & (df['age'].astype(int) <= ages[1])]
 
 
     ################################
@@ -439,7 +466,7 @@ if uploaded_files:
     source_string = df["source"].values.tolist()
     target_string = df["target"].values.tolist()
 
-     # create index values for source and target 
+    # create index values for source and target 
     combo = source_string + target_string
     all_options = np.unique(combo)
     options_to_merge = pd.DataFrame(all_options, columns = ["options"])
@@ -469,7 +496,7 @@ if uploaded_files:
     data = go.Sankey(link = link, node = node)
     fig = go.Figure(data)
     st.plotly_chart(fig)
-  
+
 
     st.write(df.astype(object))
     st.write('got here')
