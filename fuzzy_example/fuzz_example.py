@@ -107,10 +107,13 @@ name_money = pd.DataFrame([{'name':'Will', 'money':'£0.10',},
                            {'name':'Rob', 'money':'LOTS',},
                            {'name':'Joe', 'money':'Some',},])
 
-name_number = pd.DataFrame([{'name':'Will', 'account_number':'£0.10',},
-                           {'name':'Georgie', 'account_number':'£30',},
-                           {'name':'Alistair', 'account_number':'£10',},
-                           {'name':'John', 'account_number':'£13',},
-                           {'name':'Rob', 'account_number':'LOTS',},
-                           {'name':'Joe', 'account_number':'Some',},])
+name_number = pd.DataFrame([{'name':'Willis', 'account_number':'£0.10',},
+                           {'name':'George', 'account_number':'£30',},
+                           {'name':'Ali.', 'account_number':'£10',},
+                           {'name':'Jon', 'account_number':'£13',},
+                           {'name':'Robert', 'account_number':'LOTS',},
+                           {'name':'Joseph', 'account_number':'Some',},])
+
+st.table(name_money)
+st.table(name_number)
 
