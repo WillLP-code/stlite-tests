@@ -22,52 +22,69 @@ stlite.mount(
     requirements: ["plotly"], // Packages to install
     entrypoint: "test_app.py", // The target file of the `streamlit run` command
     files: {
-        "test_app.py": `
+        "ern_app.py": `
+        import pandas as pd 
 import streamlit as st
-import pandas as pd
+import json
 import plotly.express as px
-from pyodide.http import open_url
+import numpy as np
 
-st.title('PATCh demo using Characteristics of CIN data')
-st.write('Data available publicly here: https://explore-education-statistics.service.gov.uk/find-statistics/characteristics-of-children-in-need#help-and-support')
+def ingress(filepath):
+    df['SEX'] = df['SEX'].map({1:'Male',
+                        2:'Female'})
+    # convert birthday column
+    # Get age in years
+    # https://stackoverflow.com/questions/31490816/calculate-datetime-difference-in-years-months-etc-in-a-new-pandas-dataframe-c
+    # Tip: to convert the age column to whole numbers, rounded down, use: .astype('int') on the column
+    df['DOB'] = pd.to_datetime(df['DOB'], format="%d/%m/%Y", errors='coerce')
 
-data = open_url("https://raw.githubusercontent.com/WillLP-code/stlite-tests/main/benchmarking%20test/data/a1.csv")
-df = pd.read_csv(data)
+    df['AGE'] = (pd.to_datetime('today').normalize() - df['DOB'])
+    #st.write(type(df['age'][0]))
+    # make column for age today
+    df['AGE'] = (df['AGE'] / np.timedelta64(1, 'Y')).astype('int')
 
-with st.sidebar:
-    st.title('Chart Options')
-    chart_title = st.sidebar.text_input(label='What do you want to call the chart?',
-                                         value='Please name the chart')
+    return df
 
-category = df['category'].unique()
+def number_of_children(df):
+    child_count = len(df['CHILD'].unique())
+    return child_count
 
-with st.sidebar:
-        years = st.sidebar.slider('Year select',
-                        min_value=2013,
-                        max_value=2022,
-                        value=[2013,2022])
+def boys_girls_count(df):
+    counts = df['SEX'].value_counts().to_json()
+    counts = json.loads(counts)
+    return counts['Male'], counts['Female']
 
-df = df[(df['time_period'].astype(int) >= years[0]) & (df['time_period'].astype(int) <= years[1])]
+st.title("903 Header analysis tool")
+
+uploaded_files = st.file_uploader('Upload 903 header here:', accept_multiple_files=True)
+if uploaded_files:
+    loaded_files = {uploaded_file.name[:-4]: pd.read_csv(uploaded_file) for uploaded_file in uploaded_files} 
+    
+    df = list(loaded_files.values())[0]
+    
+    df = ingress(df)
+    st.dataframe(df)
+
+    child_count = number_of_children(df)
+    boys, girls = boys_girls_count(df)
+
+    st.write(f'The number of children is: {child_count}')
+    st.write(f'The number of boys is: {boys}')
+    st.write(f'The number of girls is: {girls}')
+
+    fig = px.bar(df, x='SEX')
+    st.plotly_chart(fig)
+
+    # Make a bar plot for Ethnicity
+    fig = px.bar(df, x='ETHNIC')
+    st.plotly_chart(fig)
+
+    # Make a histogram plot for age
+    # Use google and the plotly docs for this!
+    fig = px.histogram(df, x='AGE')
+    st.plotly_chart(fig)
 
 
-with st.sidebar:
-    cat_option = st.sidebar.selectbox(
-    'What data category would you like?',
-    (category))
-    st.write('You selected:', cat_option)
-df = df[df['category'] == cat_option]
-
-with st.sidebar:
-    category_type = df['category_type'].unique()
-    cat_type_option = st.sidebar.selectbox(
-    'What sub-category would you like?',
-    (category_type))
-    st.write('You selected:', cat_type_option)
-df = df[df['category_type'] == cat_type_option]
-st.dataframe(df)
-
-fig = px.line(df, x="time_period", y="number", title=f'{chart_title}<br><sup>{cat_option} : {cat_type_option}</sup>')
-st.plotly_chart(fig)
 `,
     },
   },
